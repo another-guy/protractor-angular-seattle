@@ -1,0 +1,13 @@
+<div *ngIf="value" class="row">
+
+  <span class="col-sm">Week {{ weekIndex + 1 }}</span>
+  <span class="col-sm" *ngFor="let day of value.dayList">
+    
+    <timesheet-week-day
+      [value]="day"
+      >
+    </timesheet-week-day>
+
+  </span>
+  <span class="col-sm">{{ weekTotal }}</span>
+</div>
