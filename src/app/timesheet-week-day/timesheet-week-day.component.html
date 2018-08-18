@@ -1,6 +1,18 @@
-<span *ngIf="value" class="input-group">
-  <input type="text" class="form-control" [(value)]="value.hours">
-  <div class="input-group-append">
-    <div class="input-group-text">{{ value.earningCode }}</div>
-  </div>
+<span
+  *ngIf="value"
+  class="input-group week-day"
+  >
+
+  <input
+    type="text"
+    class="form-control week-day__hours"
+    [(ngModel)]="value.hours"
+    >
+
+  <input
+    type="text"
+    class="form-control input-group-text week-day__earning-code"
+    [(ngModel)]="value.earningCode"
+    >
+
 </span>

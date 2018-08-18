@@ -1,7 +1,16 @@
-<div *ngIf="value" class="row">
+<div
+  *ngIf="value"
+  class="row timesheet-line"
+  >
 
-  <span class="col-sm">Week {{ weekIndex + 1 }}</span>
-  <span class="col-sm" *ngFor="let day of value.dayList">
+  <span class="col-sm timesheet-line__week-number-cell">
+    Week {{ weekIndex + 1 }}
+  </span>
+
+  <span
+    class="col-sm timesheet-line__week-day-cell"
+    *ngFor="let day of value.dayList"
+    >
     
     <timesheet-week-day
       [value]="day"
@@ -9,5 +18,8 @@
     </timesheet-week-day>
 
   </span>
-  <span class="col-sm">{{ weekTotal }}</span>
+
+  <span class="col-sm timesheet-line__week-total-cell">
+    {{ weekTotal }}
+  </span>
 </div>

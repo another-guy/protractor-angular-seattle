@@ -1,6 +1,20 @@
-<div *ngIf="value" class="row">
-  <span class="col-sm" *ngFor="let dayIndex of dayIndices"></span>
-  <span class="col-sm">GRAND TOTAL</span>
-  <span class="col-sm">{{ grandTotal }}</span>
+<div
+  *ngIf="value"
+  class="row timesheet-footer"
+  >
+  
+  <span
+    class="col-sm placeholder"
+    *ngFor="let dayIndex of dayIndices"
+    ></span>
+
+  <span class="col-sm timesheet-footer__grand-total-title">
+    GRAND TOTAL
+  </span>
+
+  <span class="col-sm timesheet-footer__grand-total-cell">
+    {{ grandTotal }}
+  </span>
+
 </div>
   
