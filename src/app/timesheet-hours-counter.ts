@@ -1,4 +1,4 @@
-import { Timesheet, TimesheetWeekLine } from 'src/app/models/timesheet';
+import { Timesheet, TimesheetWeekLine } from './models/timesheet';
 
 export class TimesheetHoursCounter {
 

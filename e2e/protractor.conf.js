@@ -24,5 +24,8 @@ exports.config = {
       project: require('path').join(__dirname, './tsconfig.e2e.json')
     });
     jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
+
+    browser.driver.manage().window().setSize(1920, 1080);
+    browser.driver.manage().window().setPosition(0, 0);
   }
 };

@@ -33,19 +33,14 @@ describe('Timesheet', () => {
     });
 
     it('should be calculated properly for non-empty timesheet', async () => {
-      [
-        [ { h: '0', c: 'reg' }, { h: '1', c: 'reg' }, { h: '2', c: 'reg' }, { h: '3', c: 'reg' }, { h: '4', c: 'reg' }, { h: '5', c: 'reg' }, { h: '0', c: 'reg' } ],
-        [ { h: '0', c: 'vac' }, { h: '1', c: 'vac' }, { h: '2', c: 'vac' }, { h: '3', c: 'vac' }, { h: '4', c: 'vac' }, { h: '5', c: 'vac' }, { h: '0', c: 'vac' } ],
-        [ { h: '8', c: 'reg' }, { h: '0', c: 'reg' }, { h: '0', c: 'reg' }, { h: '0', c: 'reg' }, { h: '0', c: 'reg' }, { h: '0', c: 'reg' }, { h: '8', c: 'reg' } ],
-        [ { h: '8', c: 'vac' }, { h: '0', c: 'vac' }, { h: '0', c: 'vac' }, { h: '0', c: 'vac' }, { h: '0', c: 'vac' }, { h: '0', c: 'vac' }, { h: '8', c: 'vac' } ],
-      ].map((weekData, weekIndex) => {
-        const weekLine = timeSheetPage.weekLines.get(weekIndex);
-        weekData.forEach((weekDayData, dayIndex) => {
-          const weekDay = weekLine.dayList.get(dayIndex);
-          weekDay.setHours(weekDayData.h);
-          weekDay.setEarningCode(weekDayData.c);
-        });
-      });
+      await fillInTimeSheet(
+        [
+          [ { h: '0', c: 'reg' }, { h: '1', c: 'reg' }, { h: '2', c: 'reg' }, { h: '3', c: 'reg' }, { h: '4', c: 'reg' }, { h: '5', c: 'reg' }, { h: '0', c: 'reg' } ],
+          [ { h: '0', c: 'vac' }, { h: '1', c: 'vac' }, { h: '2', c: 'vac' }, { h: '3', c: 'vac' }, { h: '4', c: 'vac' }, { h: '5', c: 'vac' }, { h: '0', c: 'vac' } ],
+          [ { h: '8', c: 'reg' }, { h: '0', c: 'reg' }, { h: '0', c: 'reg' }, { h: '0', c: 'reg' }, { h: '0', c: 'reg' }, { h: '0', c: 'reg' }, { h: '8', c: 'reg' } ],
+          [ { h: '8', c: 'vac' }, { h: '0', c: 'vac' }, { h: '0', c: 'vac' }, { h: '0', c: 'vac' }, { h: '0', c: 'vac' }, { h: '0', c: 'vac' }, { h: '8', c: 'vac' } ],
+        ]
+      );
 
       expect(await timeSheetPage.weekLines.get(0).totalCell.getText()).toBe('15');
       expect(await timeSheetPage.weekLines.get(1).totalCell.getText()).toBe('0');
@@ -55,3 +50,18 @@ describe('Timesheet', () => {
     });
   });
 });
+
+function fillInTimeSheet(data: { c: string, h: string }[][]): Promise<void[]> {
+  return Promise.all(
+    data.map(async (weekData, weekIndex) => {
+      const weekLine = timeSheetPage.weekLines.get(weekIndex);
+      await Promise.all(
+        weekData.map(async (weekDayData, dayIndex) => {
+          const weekDay = weekLine.dayList.get(dayIndex);
+          await weekDay.setHours(weekDayData.h);
+          await weekDay.setEarningCode(weekDayData.c);
+        })
+      );
+    })
+  );
+}

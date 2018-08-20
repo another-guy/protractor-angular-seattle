@@ -1,4 +1,5 @@
-import { ElementFinder, by, protractor } from 'protractor';
+import { by, ElementFinder } from 'protractor';
+import { InputText } from './dom-accessors/input-text';
 
 export class WeekDayPagePart {
   constructor(
@@ -6,22 +7,27 @@ export class WeekDayPagePart {
   ) {
   }
 
-  // TODO Repetetive code again...
-  async getHours(): Promise<string> {
-    return await this._element.element(by.css('.week-day__hours')).getAttribute('value');
+  private get hoursInput(): ElementFinder {
+    return this._element.element(by.css('.week-day__hours'));
   }
 
-  async getEarningCode(): Promise<string> {
-    return await this._element.element(by.css('.week-day__earning-code')).getAttribute('value');
+  private get earningCodeInput(): ElementFinder {
+    return this._element.element(by.css('.week-day__earning-code'));
   }
 
-  async setHours(text: string): Promise<void> {
-    await this._element.element(by.css('.week-day__hours')).sendKeys(text);
-    await this._element.element(by.css('.week-day__hours')).sendKeys(protractor.Key.TAB);
+  getHours(): Promise<string> {
+    return InputText.getText(this.hoursInput);
   }
 
-  async setEarningCode(text: string): Promise<void> {
-    await this._element.element(by.css('.week-day__earning-code')).sendKeys(text);
-    await this._element.element(by.css('.week-day__earning-code')).sendKeys(protractor.Key.TAB);
+  getEarningCode(): Promise<string> {
+    return InputText.getText(this.earningCodeInput);
+  }
+
+  setHours(text: string): Promise<void> {
+    return InputText.setText(this.hoursInput, text);
+  }
+
+  setEarningCode(text: string): Promise<void> {
+    return InputText.setText(this.earningCodeInput, text);
   }
 }
