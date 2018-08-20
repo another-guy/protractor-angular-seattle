@@ -1,7 +1,7 @@
 import { browser, by, element, ElementFinder } from 'protractor';
 import { TimeSheetFooterPagePart } from './timesheet-footer.page-part';
 import { TimeSheetHeaderPagePart } from './timesheet-header.page-part';
-import { TimeSheetWeekLinesPagePart } from './timesheet-week-lines.page-part';
+import { TimeSheetWeekLineListPagePart } from './timesheet-week-line-list.page-part';
 
 export class TimeSheetPage {
 
@@ -13,8 +13,7 @@ export class TimeSheetPage {
     return await this.timeSheet.isDisplayed();
   }
 
-  // TODO make private -- leaked abstraction
-  get timeSheet(): ElementFinder {
+  private get timeSheet(): ElementFinder {
     return element(by.css('.timesheet'));
   }
 
@@ -26,7 +25,7 @@ export class TimeSheetPage {
     return new TimeSheetFooterPagePart(this.timeSheet.element(by.css('.timesheet-footer')));
   }
 
-  get weekLines(): TimeSheetWeekLinesPagePart {
-    return new TimeSheetWeekLinesPagePart(this.timeSheet.all(by.css('.timesheet-line')));
+  get weekLines(): TimeSheetWeekLineListPagePart {
+    return new TimeSheetWeekLineListPagePart(this.timeSheet.all(by.css('.timesheet-line')));
   }
 }

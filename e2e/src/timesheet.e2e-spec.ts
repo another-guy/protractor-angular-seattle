@@ -1,4 +1,3 @@
-import { by } from 'protractor';
 import { TimeSheetPage } from './page-wrappers/timesheet.page';
 import { Test } from './test';
 
@@ -29,39 +28,30 @@ describe('Timesheet', () => {
 
       let expectedGrandTotal = 0;
 
-      await Promise.all(
-        [0, 1, 2, 3]
-          .map(async (weekIndex) => {
-            const weekElement = timeSheetPage.weekLines.get(weekIndex);
-            expect(await weekElement.isDisplayed()).toBeTruthy();
+      await timeSheetPage.weekLines.map(async weekLine => {
+        expect(await weekLine.isDisplayed()).toBeTruthy();
 
-            const weekDayList = weekElement.all(by.css('.week-day'));
-            expect(await weekDayList.isDisplayed()).toBeTruthy();
+        const displayedHoursAndCodes =
+          await weekLine.dayList.map<{ hours: number, code: string }>(async weekDay => {
+            const hours = +(await weekDay.getHours());
+            const code = await weekDay.getEarningCode();
+            return { hours, code };
+          });
 
-            const displayedHoursAndCodes = <{ hours: number, code: string }[]>
-              await weekDayList
-                .map(async weekDayElement => {
-                  const hours = +(await weekDayElement.element(by.css('.week-day__hours')).getAttribute('value'));
-                  const code = await weekDayElement.element(by.css('.week-day__earning-code')).getAttribute('value');
-                  return { hours, code };
-                });
+        const displayedHoursSum = +(await weekLine.totalCell.getText());
 
-            const displayedHoursSum = +(await weekElement.element(by.css('.timesheet-line__week-total-cell')).getText());
+        const expectedHoursSum = displayedHoursAndCodes
+          .reduce(
+            (subTotal, hourAndCode) =>
+              subTotal + ((hourAndCode.code || '').toUpperCase() === 'REG' ? hourAndCode.hours : 0),
+            0
+          );
+        expectedGrandTotal += expectedHoursSum;
 
-            const expectedHoursSum = displayedHoursAndCodes
-              .reduce(
-                (subTotal, hourAndCode) =>
-                  subTotal + ((hourAndCode.code || '').toUpperCase() === 'REG' ? hourAndCode.hours : 0),
-                0
-              );
-            expectedGrandTotal += expectedHoursSum;
+        expect(displayedHoursSum).toBe(expectedHoursSum);
+      });
 
-            expect(displayedHoursSum).toBe(expectedHoursSum);
-          })
-      );
-
-      const displayedGrandTotal = +(await timeSheetPage.timeSheet.element(by.css('.timesheet-footer__grand-total-cell')).getText());
-      expect(displayedGrandTotal).toBe(expectedGrandTotal);
+      expect(+(await timeSheetPage.footer.grandTotal.getText())).toBe(expectedGrandTotal);
     })
   );
 });
