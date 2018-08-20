@@ -1,45 +1,38 @@
-import { browser, by, element } from 'protractor';
+import { by } from 'protractor';
+import { TimeSheetPage } from './page-wrappers/timesheet.page';
 import { Test } from './test';
 
+const timeSheetPage = new TimeSheetPage();
 const test = new Test();
 
 describe('Timesheet', () => {
+
+  beforeEach(async () => {
+    await timeSheetPage.navigateTo();
+  });
+
+  afterEach(async () => {
+    await test.commonAfterEachTest();
+  });
+
   describe('Main UI elements', () => {
     it('should be displayed', async () => {
-      await browser.get('/');
-
-      const timeSheet = element(by.css('.timesheet'));
-      expect(await timeSheet.isDisplayed()).toBeTruthy();
-
-      const timeSheetHeader = timeSheet.element(by.css('.timesheet-header'));
-      expect(await timeSheetHeader.isDisplayed()).toBeTruthy();
-
-      const timeSheetFooter = timeSheet.element(by.css('.timesheet-footer'));
-      expect(await timeSheetFooter.isDisplayed()).toBeTruthy();
-
-      const timeSheetLineList = timeSheet.all(by.css('.timesheet-line'));
-      expect(await timeSheetLineList.count()).toBe(4);
-
-      await test.delayTestByMilliseconds(5000);
+      expect(await timeSheetPage.isDisplayed()).toBeTruthy();
+      expect(await timeSheetPage.header.isDisplayed()).toBeTruthy();
+      expect(await timeSheetPage.footer.isDisplayed()).toBeTruthy();
+      expect(await timeSheetPage.weekLines.count()).toBe(4);
     });
   });
 
   describe('Week Totals', () =>
     it('should be calculated properly', async () => {
-      await browser.get('/');
-
-      const timeSheet = element(by.css('.timesheet'));
-      expect(await timeSheet.isDisplayed()).toBeTruthy();
-
-      const timeSheetLineList = timeSheet.all(by.css('.timesheet-line'));
-      expect(await timeSheetLineList.count()).toBe(4);
 
       let expectedGrandTotal = 0;
 
       await Promise.all(
         [0, 1, 2, 3]
           .map(async (weekIndex) => {
-            const weekElement = timeSheetLineList.get(weekIndex);
+            const weekElement = timeSheetPage.weekLines.get(weekIndex);
             expect(await weekElement.isDisplayed()).toBeTruthy();
 
             const weekDayList = weekElement.all(by.css('.week-day'));
@@ -67,10 +60,8 @@ describe('Timesheet', () => {
           })
       );
 
-      const displayedGrandTotal = +(await timeSheet.element(by.css('.timesheet-footer__grand-total-cell')).getText());
+      const displayedGrandTotal = +(await timeSheetPage.timeSheet.element(by.css('.timesheet-footer__grand-total-cell')).getText());
       expect(displayedGrandTotal).toBe(expectedGrandTotal);
-
-      await test.delayTestByMilliseconds(5000);
     })
   );
 });

@@ -10,10 +10,12 @@ describe('workspace-project App', () => {
     page = new AppPage();
   });
 
+  afterEach(async () => {
+    await test.commonAfterEachTest();
+  });
+
   it('should display welcome message', async () => {
     await page.navigateTo();
     expect(await page.getParagraphText()).toEqual('Welcome to protractor-angular-seattle!');
-
-    await test.delayTestByMilliseconds(5000);
   });
 });
