@@ -1,20 +1,21 @@
 import { browser, by, element, ElementFinder } from 'protractor';
+import { ScalarPagePartBase } from './base-classes/scalar-page-part-base';
 import { TimeSheetFooterPagePart } from './timesheet-footer.page-part';
 import { TimeSheetHeaderPagePart } from './timesheet-header.page-part';
 import { TimeSheetWeekLineListPagePart } from './timesheet-week-line-list.page-part';
 
-export class TimeSheetPage {
+export class TimeSheetPage extends ScalarPagePartBase {
+
+  constructor() {
+    super(element(by.css('.timesheet')));
+  }
 
   async navigateTo(): Promise<void> {
     await browser.get('/');
   }
 
-  async isDisplayed(): Promise<boolean> {
-    return await this.timeSheet.isDisplayed();
-  }
-
   private get timeSheet(): ElementFinder {
-    return element(by.css('.timesheet'));
+    return this._element;
   }
 
   get header(): TimeSheetHeaderPagePart {

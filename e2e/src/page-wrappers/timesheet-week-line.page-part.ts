@@ -1,14 +1,12 @@
 import { by, ElementFinder } from 'protractor';
 import { WeekDayListPagePart } from './week-day-list.page-part';
+import { ScalarPagePartBase } from './base-classes/scalar-page-part-base';
 
-export class TimeSheetWeekLinePagePart {
+export class TimeSheetWeekLinePagePart extends ScalarPagePartBase {
   constructor(
-    private _element: ElementFinder,
+    _element: ElementFinder,
   ) {
-  }
-
-  async isDisplayed(): Promise<boolean> {
-    return await this._element.isDisplayed();
+    super(_element);
   }
 
   get dayList(): WeekDayListPagePart {

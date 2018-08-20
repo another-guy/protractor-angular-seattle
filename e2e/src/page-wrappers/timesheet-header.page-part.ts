@@ -1,12 +1,10 @@
 import { ElementFinder } from 'protractor';
+import { ScalarPagePartBase } from './base-classes/scalar-page-part-base';
 
-export class TimeSheetHeaderPagePart {
+export class TimeSheetHeaderPagePart extends ScalarPagePartBase {
   constructor(
-    private _element: ElementFinder,
+    _element: ElementFinder,
   ) {
-  }
-
-  async isDisplayed(): Promise<boolean> {
-    return this._element.isDisplayed();
+    super(_element);
   }
 }

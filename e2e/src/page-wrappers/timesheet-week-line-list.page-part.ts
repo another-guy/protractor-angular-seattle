@@ -1,22 +1,11 @@
 import { ElementArrayFinder } from 'protractor';
+import { ListPagePartBase } from './base-classes/list-page-part-base';
 import { TimeSheetWeekLinePagePart } from './timesheet-week-line.page-part';
 
-export class TimeSheetWeekLineListPagePart {
+export class TimeSheetWeekLineListPagePart extends ListPagePartBase<TimeSheetWeekLinePagePart> {
   constructor(
-    private _elementList: ElementArrayFinder,
+    _elementList: ElementArrayFinder,
   ) {
+    super(elemendFinder => new TimeSheetWeekLinePagePart(elemendFinder), _elementList);
   }
-
-  async count(): Promise<number> {
-    return await this._elementList.count();
-  }
-
-  get(weekLineIndex: number): TimeSheetWeekLinePagePart {
-    return new TimeSheetWeekLinePagePart(this._elementList.get(weekLineIndex));
-  }
-
-  async map<T>(mapFn: (weekDay?: TimeSheetWeekLinePagePart, index?: number) => T | any) {
-    return await this._elementList.map<TimeSheetWeekLinePagePart>((element, index) => mapFn(new TimeSheetWeekLinePagePart(element), index));
-  }
-
 }

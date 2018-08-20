@@ -1,14 +1,12 @@
 import { by, ElementFinder } from 'protractor';
+import { ScalarPagePartBase } from './base-classes/scalar-page-part-base';
 import { GrandTotalPagePart } from './grand-total.page-part';
 
-export class TimeSheetFooterPagePart {
+export class TimeSheetFooterPagePart extends ScalarPagePartBase {
   constructor(
-    private _element: ElementFinder,
+    _element: ElementFinder,
   ) {
-  }
-
-  async isDisplayed(): Promise<boolean> {
-    return this._element.isDisplayed();
+    super(_element);
   }
 
   get grandTotal(): GrandTotalPagePart {
