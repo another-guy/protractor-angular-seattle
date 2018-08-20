@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FAKE_TIMESHEET } from './fake-timesheet';
+import { BLANK_TIMESHEET } from './blank-timesheet';
 
 @Component({
   selector: 'root',
@@ -9,5 +9,5 @@ import { FAKE_TIMESHEET } from './fake-timesheet';
 export class AppComponent {
   title = 'protractor-angular-seattle';
 
-  timesheet = FAKE_TIMESHEET;
+  timesheet = BLANK_TIMESHEET;
 }

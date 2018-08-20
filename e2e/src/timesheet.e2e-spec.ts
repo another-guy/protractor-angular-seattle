@@ -23,35 +23,35 @@ describe('Timesheet', () => {
     });
   });
 
-  describe('Week Totals', () =>
-    it('should be calculated properly', async () => {
+  describe('Week Totals', () => {
+    it('should be calculated properly for empty timesheet', async () => {
+      await timeSheetPage.weekLines.forEach(async weekDay =>
+        expect(await weekDay.totalCell.getText()).toBe('0')
+      );
 
-      let expectedGrandTotal = 0;
+      expect(await timeSheetPage.footer.grandTotal.getText()).toBe('0');
+    });
 
-      await timeSheetPage.weekLines.map(async weekLine => {
-        expect(await weekLine.isDisplayed()).toBeTruthy();
-
-        const displayedHoursAndCodes =
-          await weekLine.dayList.map<{ hours: number, code: string }>(async weekDay => {
-            const hours = +(await weekDay.getHours());
-            const code = await weekDay.getEarningCode();
-            return { hours, code };
-          });
-
-        const displayedHoursSum = +(await weekLine.totalCell.getText());
-
-        const expectedHoursSum = displayedHoursAndCodes
-          .reduce(
-            (subTotal, hourAndCode) =>
-              subTotal + ((hourAndCode.code || '').toUpperCase() === 'REG' ? hourAndCode.hours : 0),
-            0
-          );
-        expectedGrandTotal += expectedHoursSum;
-
-        expect(displayedHoursSum).toBe(expectedHoursSum);
+    it('should be calculated properly for non-empty timesheet', async () => {
+      [
+        [ { h: '0', c: 'reg' }, { h: '1', c: 'reg' }, { h: '2', c: 'reg' }, { h: '3', c: 'reg' }, { h: '4', c: 'reg' }, { h: '5', c: 'reg' }, { h: '0', c: 'reg' } ],
+        [ { h: '0', c: 'vac' }, { h: '1', c: 'vac' }, { h: '2', c: 'vac' }, { h: '3', c: 'vac' }, { h: '4', c: 'vac' }, { h: '5', c: 'vac' }, { h: '0', c: 'vac' } ],
+        [ { h: '8', c: 'reg' }, { h: '0', c: 'reg' }, { h: '0', c: 'reg' }, { h: '0', c: 'reg' }, { h: '0', c: 'reg' }, { h: '0', c: 'reg' }, { h: '8', c: 'reg' } ],
+        [ { h: '8', c: 'vac' }, { h: '0', c: 'vac' }, { h: '0', c: 'vac' }, { h: '0', c: 'vac' }, { h: '0', c: 'vac' }, { h: '0', c: 'vac' }, { h: '8', c: 'vac' } ],
+      ].map((weekData, weekIndex) => {
+        const weekLine = timeSheetPage.weekLines.get(weekIndex);
+        weekData.forEach((weekDayData, dayIndex) => {
+          const weekDay = weekLine.dayList.get(dayIndex);
+          weekDay.setHours(weekDayData.h);
+          weekDay.setEarningCode(weekDayData.c);
+        });
       });
 
-      expect(+(await timeSheetPage.footer.grandTotal.getText())).toBe(expectedGrandTotal);
-    })
-  );
+      expect(await timeSheetPage.weekLines.get(0).totalCell.getText()).toBe('15');
+      expect(await timeSheetPage.weekLines.get(1).totalCell.getText()).toBe('0');
+      expect(await timeSheetPage.weekLines.get(2).totalCell.getText()).toBe('16');
+      expect(await timeSheetPage.weekLines.get(3).totalCell.getText()).toBe('0');
+      expect(await timeSheetPage.footer.grandTotal.getText()).toBe('31');
+    });
+  });
 });

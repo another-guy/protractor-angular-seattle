@@ -7,7 +7,7 @@ export class Test {
 
     // TODO take screenshot
 
-    await this.delayTestByMilliseconds(5000);
+    await this.delayTestByMilliseconds(2000);
   }
 
   async delayTestByMilliseconds(interval: number = 500): Promise<any> {
