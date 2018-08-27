@@ -6,6 +6,7 @@ import { TimesheetFooterLineComponent } from './timesheet-footer-line/timesheet-
 import { TimesheetHeaderLineComponent } from './timesheet-header-line/timesheet-header-line.component';
 import { TimesheetWeekDayComponent } from './timesheet-week-day/timesheet-week-day.component';
 import { TimesheetWeekLineComponent } from './timesheet-week-line/timesheet-week-line.component';
+import { ResourceLoader } from '@angular/compiler';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,9 @@ import { TimesheetWeekLineComponent } from './timesheet-week-line/timesheet-week
     BrowserModule,
     FormsModule,
   ],
-  providers: [],
+  providers: [
+    { provide: ResourceLoader, useValue: null },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
