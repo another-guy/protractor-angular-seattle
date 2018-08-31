@@ -1,14 +1,22 @@
+import { DOCUMENT } from '@angular/common';
 import { ResourceLoader } from '@angular/compiler';
-import { Compiler, CompilerFactory, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, StaticProvider, Type } from '@angular/core';
+import { CompilerFactory, COMPILER_OPTIONS, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, StaticProvider, Type, NgZone } from '@angular/core';
 import { EventManager } from '@angular/platform-browser';
-import { platformDynamicServer } from '@angular/platform-server';
+import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
+import { platformServer } from '@angular/platform-server';
 import { readFile } from 'fs';
 import * as glob from 'glob';
+import { JSDOM } from 'jsdom';
 import * as path from 'path';
 import 'zone.js';
 import 'zone.js/dist/long-stack-trace-zone.js';
 import { AppComponent } from './app/app.component';
 import { AppModule } from './app/app.module';
+
+const jsdom = new JSDOM(`<html></html>`);
+export function _document() {
+  return jsdom.window.document;
+}
 
 @Injectable()
 export class ResourceLoaderImpl extends ResourceLoader {
@@ -70,32 +78,48 @@ export class MyDomRendererFactory2 implements RendererFactory2 {
   whenRenderingDone?(): Promise<any> { throw new Error("Method not implemented."); }
 }
 
-export function createCompiler(compilerFactory: CompilerFactory): Compiler {
-  return compilerFactory.createCompiler();
-}
-
 async function generate<M>(moduleType: Type<M>) {
   try {
-    const extraProviders: StaticProvider[] = [
-      { provide: Compiler, useFactory: createCompiler, deps: [CompilerFactory] },
+    const documentProvider = { provide: DOCUMENT, useFactory: _document, deps: [] };
+    const commonPlatformServerProviders: StaticProvider[] = [
+      documentProvider,
     ];
-    const platformRef = platformDynamicServer(extraProviders);
+    const rendererFactoryProvider = {
+      provide: RendererFactory2, useFactory: MyDomRendererFactory2,
+      deps: [DOCUMENT, EventManager, NgZone], // DomRendererFactory2, AnimationEngine, NgZone
+    };
+    const rendererProvider = { provide: Renderer2, useClass: MyRenderer, deps: [EventManager, DOCUMENT] };
+
+    const platformRef = platformServer([
+        ...commonPlatformServerProviders,
+        {
+          provide: COMPILER_OPTIONS,
+          useValue: {providers: [{provide: ResourceLoader, useClass: ResourceLoaderImpl, deps: []}]},
+          multi: true
+        },
+        { provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS] },
+
+        rendererFactoryProvider,
+        rendererProvider,
+      ]);
+
+
+    const resourceLoaderProvider = { provide: ResourceLoader, useValue: new ResourceLoaderImpl(`src\\app`), deps: [] };
+
     const moduleRef = await platformRef
       .bootstrapModule(
         moduleType,
         {
           providers: [
-            { provide: ResourceLoader, useValue: new ResourceLoaderImpl(`src\\app`), deps: [ ] },
+            documentProvider,
+            
+            rendererFactoryProvider,
+            rendererProvider,
 
-            // { provide: Renderer2, useFactory: createRenderer, deps: [EventManager] },
-            {
-              provide: RendererFactory2,
-              useClass: MyDomRendererFactory2,
-              deps: [EventManager],
-            },
+            resourceLoaderProvider,
           ],
         });
-    
+
     const appComponent = moduleRef.injector.get(AppComponent);
     
     console.info(appComponent.title.toString());
